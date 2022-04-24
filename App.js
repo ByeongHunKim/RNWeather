@@ -5,14 +5,13 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function App() {
   return (
     <View style={styles.container}>
-      {/* <StatusBar style="auto" /> */}
       <View style={styles.city}>
         <Text style={styles.cityName}>Seoul</Text>
-        <View style={styles.weather}>
-          <View style={styles.day}>
-            <Text style={styles.temp}>27</Text>
-            <Text style={styles.description}>sunny</Text>
-          </View>
+      </View>
+      <View style={styles.weather}>
+        <View style={styles.day}>
+          <Text style={styles.temp}>27</Text>
+          <Text style={styles.description}>Sunny</Text>
         </View>
       </View>
     </View>
