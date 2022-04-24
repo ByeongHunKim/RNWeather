@@ -7,6 +7,7 @@ import { StyleSheet, Text, View, ScrollView, Dimensions } from 'react-native';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function App() {
+  const [city, setCity] = useState('Loading...');
   const [location, setLocation] = useState();
   const [ok, setOk] = useState(true);
   const ask = async () => {
@@ -15,6 +16,16 @@ export default function App() {
     if (!granted) {
       setOk(false);
     }
+    const {
+      coords: { latitude, longitude },
+    } = await Location.getCurrentPositionAsync({ accuracy: 5 });
+    // console.log(location) 이 안에 위도와 경도를 가지고 있다.
+    const location = await Location.reverseGeocodeAsync(
+      { latitude, longitude },
+      { useGoogleMaps: false }
+    );
+    // console.log(location[0].city) or location
+    setCity(location[0].city);
   };
 
   useEffect(() => {
@@ -24,7 +35,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.city}>
-        <Text style={styles.cityName}>Seoul</Text>
+        <Text style={styles.cityName}>{city}</Text>
       </View>
       <ScrollView
         showsHorizontalScrollIndicator={false}
