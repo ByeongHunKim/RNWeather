@@ -1,11 +1,26 @@
+import * as Location from 'expo-location';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, Dimensions } from 'react-native';
 
 // ES6사용 === const SCREEN_WIDTH = Dimensions.get("window").width;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function App() {
+  const [location, setLocation] = useState();
+  const [ok, setOk] = useState(true);
+  const ask = async () => {
+    const { granted } = await Location.requestForegroundPermissionsAsync();
+    // console.log(permission);
+    if (!granted) {
+      setOk(false);
+    }
+  };
+
+  useEffect(() => {
+    ask();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.city}>
