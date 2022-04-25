@@ -1,16 +1,17 @@
 import * as Location from 'expo-location';
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, Dimensions } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View, ScrollView, Dimensions } from 'react-native';
 
 // ES6사용 === const SCREEN_WIDTH = Dimensions.get("window").width;
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const API_KEY = 'bd093f06d918ed4f87f1396a260737b8';
 
 export default function App() {
   const [city, setCity] = useState('Loading...');
-  const [location, setLocation] = useState();
+  const [days, setDays] = useState([]);
   const [ok, setOk] = useState(true);
-  const ask = async () => {
+  const getWeather = async () => {
     const { granted } = await Location.requestForegroundPermissionsAsync();
     // console.log(permission);
     if (!granted) {
@@ -26,10 +27,16 @@ export default function App() {
     );
     // console.log(location[0].city) or location
     setCity(location[0].city);
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=alerts&appid=${API_KEY}&units=metric`
+    );
+    const json = await response.json();
+    // console.log(json.daily);
+    setDays(json.daily);
   };
 
   useEffect(() => {
-    ask();
+    getWeather();
   }, []);
 
   return (
@@ -43,10 +50,19 @@ export default function App() {
         horizontal
         style={styles.weather}
       >
-        <View style={styles.day}>
-          <Text style={styles.temp}>27</Text>
-          <Text style={styles.description}>Sunny</Text>
-        </View>
+        {days.length === 0 ? (
+          <View style={styles.day}>
+            <ActivityIndicator style={{ marginTop: 10 }} color="white" size="large" />
+          </View>
+        ) : (
+          days.map((day, index) => (
+            <View key={index} style={styles.day}>
+              <Text style={styles.temp}>{parseFloat(day.temp.day).toFixed(1)}</Text>
+              <Text style={styles.description}>{day.weather[0].main}</Text>
+              <Text style={styles.tinyText}>{day.weather[0].description}</Text>
+            </View>
+          ))
+        )}
       </ScrollView>
     </View>
   );
@@ -78,5 +94,8 @@ const styles = StyleSheet.create({
   description: {
     marginTop: -30,
     fontSize: 100,
+  },
+  tinyText: {
+    fontSize: 20,
   },
 });
